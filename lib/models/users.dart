@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class User {
   final String id; // Primary key (UUID or auto-increment)
   final String role; // 'patient', 'doctor', 'caregiver'
