@@ -236,7 +236,7 @@ class _SignInScreenState extends State<SignInScreen>
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Animated gradient background
+          
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _floatingController,
@@ -248,7 +248,6 @@ class _SignInScreenState extends State<SignInScreen>
             ),
           ),
 
-          // LOGO
           Positioned(
             left: horizontalPadding,
             right: horizontalPadding,
