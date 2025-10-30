@@ -40,7 +40,6 @@ class AuthService {
         'lastLogin': FieldValue.serverTimestamp(),
       });
 
-      // 3. Update display name
       if (fullName != null && fullName.isNotEmpty) {
         await credential.user!.updateDisplayName(fullName);
       }
