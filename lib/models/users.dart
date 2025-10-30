@@ -14,7 +14,6 @@ class User {
   final String? doctorId; // Doctor uses this (e.g., DR12345)
   final String? username; // Doctor & Caregiver use this
   
-  // Additional optional fields
   final String? profilePicture;
   final String? fullName;
   final DateTime? lastLogin;
