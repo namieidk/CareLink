@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'docsign.dart';   // <-- Doctor Sign‑In screen
+import 'package:carelink/auth_service.dart';
 
 class DocSignUpScreen extends StatefulWidget {
   const DocSignUpScreen({Key? key}) : super(key: key);
