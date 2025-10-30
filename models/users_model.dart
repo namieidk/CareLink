@@ -1,6 +1,3 @@
-// ──────────────────────────────────────────────────────────────
-// user_model.dart - Unified User Model for All Roles
-// ──────────────────────────────────────────────────────────────
 
 class User {
   final String id; // Primary key (UUID or auto-increment)

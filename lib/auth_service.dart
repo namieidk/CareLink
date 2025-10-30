@@ -11,15 +11,10 @@ class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
-  // Get current user
   auth.User? get currentUser => _firebaseAuth.currentUser;
   
-  // Auth state changes stream
   Stream<auth.User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  // ──────────────────────────────────────────────────────────────
-  // PATIENT SIGN UP
-  // ──────────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> signUpPatient({
     required String email,
     required String phone,
@@ -27,7 +22,6 @@ class AuthService {
     String? fullName,
   }) async {
     try {
-      // 1. Create user in Firebase Auth
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
