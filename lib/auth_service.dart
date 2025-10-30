@@ -3,9 +3,7 @@
 // ──────────────────────────────────────────────────────────────
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-
-import '../models/users_model.dart';
+import 'package:carelink/models/users.dart';
 
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
