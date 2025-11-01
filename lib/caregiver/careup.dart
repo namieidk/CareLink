@@ -1,10 +1,11 @@
 // ──────────────────────────────────────────────────────────────
-// careup.dart
+// careup.dart - Caregiver Sign-Up (Email + Username + Password)
 // ──────────────────────────────────────────────────────────────
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import 'caresign.dart';   // <-- Caregiver Sign‑In screen
+import 'caresign.dart';
+import 'package:carelink/auth_service.dart';
 
 class CareSignUpScreen extends StatefulWidget {
   const CareSignUpScreen({Key? key}) : super(key: key);
@@ -20,11 +21,13 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  // Updated fields – **Email** instead of Doctor ID
-  final _emailController = TextEditingController(text: 'jane@example.com');
-  final _usernameController = TextEditingController(text: 'caregiver_jane');
+  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _authService = AuthService();
+
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -70,13 +73,66 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
     super.dispose();
   }
 
+  Future<void> _signUp() async {
+    final email = _emailController.text.trim();
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    if (email.isEmpty || username.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      _showSnackBar('All fields are required', isError: true);
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showSnackBar('Passwords do not match', isError: true);
+      return;
+    }
+
+    if (password.length < 6) {
+      _showSnackBar('Password must be at least 6 characters', isError: true);
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    HapticFeedback.mediumImpact();
+
+    final result = await _authService.signUpCaregiver(
+      email: email,
+      username: username,
+      password: password,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (result['success']) {
+      _showSnackBar(result['message']);
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const CareSignInScreen()),
+        );
+      }
+    } else {
+      _showSnackBar(result['error'], isError: true);
+    }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final bool isWeb = size.width > 600;
 
     final double horizontalPadding = isWeb ? size.width * 0.08 : 42.0;
-    final double panelTopPosition = size.height * 0.25; // Moved up
+    final double panelTopPosition = size.height * 0.25;
     final double logoTopPosition = size.height * 0.08;
     final double logoSize = isWeb ? 160 : 140;
 
@@ -84,7 +140,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Animated gradient background
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _floatingController,
@@ -96,7 +151,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
             ),
           ),
 
-          // LOGO – BIG
           Positioned(
             left: horizontalPadding,
             right: horizontalPadding,
@@ -115,7 +169,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
             ),
           ),
 
-          // White curved panel – MOVED UP
           Positioned(
             left: 0,
             right: 0,
@@ -150,7 +203,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Title
                         Text(
                           'Sign up',
                           style: TextStyle(
@@ -170,7 +222,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                         ),
                         const SizedBox(height: 24),
 
-                        // Email
                         _buildTextField(
                           label: 'Email',
                           controller: _emailController,
@@ -180,7 +231,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                         ),
                         const SizedBox(height: 16),
 
-                        // Username
                         _buildTextField(
                           label: 'Username',
                           controller: _usernameController,
@@ -190,7 +240,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                         ),
                         const SizedBox(height: 16),
 
-                        // Password
                         _buildTextField(
                           label: 'Password',
                           controller: _passwordController,
@@ -201,7 +250,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                         ),
                         const SizedBox(height: 16),
 
-                        // Confirm Password
                         _buildTextField(
                           label: 'Confirm Password',
                           controller: _confirmPasswordController,
@@ -212,16 +260,10 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                         ),
                         const SizedBox(height: 28),
 
-                        // Create Account Button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              HapticFeedback.mediumImpact();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Creating account...')),
-                              );
-                            },
+                            onPressed: _isLoading ? null : _signUp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFFF8383),
                               foregroundColor: Colors.white,
@@ -232,19 +274,27 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
                               elevation: 8,
                               shadowColor: const Color(0xFFFF8383).withOpacity(0.4),
                             ),
-                            child: Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: isWeb ? 20 : 18,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    'Create Account',
+                                    style: TextStyle(
+                                      fontSize: isWeb ? 20 : 18,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 20),
 
-                        // LOGIN LINK → CareSignInScreen
                         Center(
                           child: RichText(
                             text: TextSpan(
@@ -289,9 +339,6 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
     );
   }
 
-  // ──────────────────────────────────────────────────────────────
-  // TextField builder
-  // ──────────────────────────────────────────────────────────────
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -323,14 +370,12 @@ class _CareSignUpScreenState extends State<CareSignUpScreen>
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: const Color(0xFFBDBDBD), size: 20),
             suffixIcon: isPassword
-                ? Icon(Icons.visibility_off,
-                    color: const Color(0xFFBDBDBD), size: 20)
+                ? Icon(Icons.visibility_off, color: const Color(0xFFBDBDBD), size: 20)
                 : null,
             hintText: hintText,
             hintStyle: const TextStyle(color: Color(0xFFBDBDBD)),
             enabledBorder: UnderlineInputBorder(
-              borderSide:
-                  BorderSide(color: const Color(0xFFBDBDBD).withOpacity(0.5)),
+              borderSide: BorderSide(color: const Color(0xFFBDBDBD).withOpacity(0.5)),
             ),
             focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFFFF8383), width: 2),

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'signup.dart';
 import '../auth_service.dart'; 
+import 'Home.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -72,45 +73,39 @@ class _SignInScreenState extends State<SignInScreen>
   }
 
   // ──────────────────────────────────────────────────────────────
-  // SIGN IN HANDLER
-  // ──────────────────────────────────────────────────────────────
-  Future<void> _handleSignIn() async {
-    if (!_formKey.currentState!.validate()) return;
+// SIGN IN HANDLER - FIXED ROUTE TO Home.dart
+// ──────────────────────────────────────────────────────────────
+Future<void> _handleSignIn() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
-    HapticFeedback.mediumImpact();
+  setState(() => _isLoading = true);
+  HapticFeedback.mediumImpact();
 
-    try {
-     TODO:
-     
-      final result = await _authService.signInPatient(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
+  try {
+    final result = await _authService.signInPatient(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
 
-      setState(() => _isLoading = false);
+    setState(() => _isLoading = false);
 
-      if (result['success']) {
-        _showSuccess(result['message']);
-        // Navigate to patient home screen
-        // Navigator.of(context).pushReplacement(
-        //   MaterialPageRoute(builder: (context) => PatientHomeScreen()),
-        // );
-      } else {
-        _showError(result['error']);
+    if (result['success']) {
+      _showSuccess(result['message'] ?? 'Login successful!');
+      
+      // Navigate to Home screen and remove SignIn from stack
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const PatientHomePage()),
+        );
       }
-     
-
-      // TEMPORARY - Remove when Firebase is connected
-      await Future.delayed(const Duration(seconds: 2));
-      setState(() => _isLoading = false);
-      _showSuccess('Login successful! (Demo mode)');
-
-    } catch (e) {
-      setState(() => _isLoading = false);
-      _showError('An unexpected error occurred: $e');
+    } else {
+      _showError(result['error'] ?? 'Login failed');
     }
+  } catch (e) {
+    setState(() => _isLoading = false);
+    _showError('An unexpected error occurred: $e');
   }
+}
 
   // ──────────────────────────────────────────────────────────────
   // FORGOT PASSWORD HANDLER
@@ -131,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen>
 
     try {
       // TODO: Uncomment when auth_service.dart is added
-      /*
+     
       final result = await _authService.resetPassword(_emailController.text.trim());
 
       setState(() => _isLoading = false);
@@ -141,12 +136,6 @@ class _SignInScreenState extends State<SignInScreen>
       } else {
         _showError(result['error']);
       }
-      */
-
-      // TEMPORARY - Remove when Firebase is connected
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() => _isLoading = false);
-      _showSuccess('Password reset email sent! (Demo mode)');
 
     } catch (e) {
       setState(() => _isLoading = false);
