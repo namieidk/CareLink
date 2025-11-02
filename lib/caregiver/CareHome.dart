@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'patient.dart';
+import 'caremed.dart';
+import 'calendar.dart';
 
 class CaregiverDashboardScreen extends StatelessWidget {
   const CaregiverDashboardScreen({Key? key}) : super(key: key);
@@ -188,7 +191,14 @@ class CaregiverDashboardScreen extends StatelessWidget {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MedicationScreen(),
+                            ),
+                          );
+                        },
                         child: Text(
                           'View All',
                           style: TextStyle(
@@ -244,6 +254,7 @@ class CaregiverDashboardScreen extends StatelessWidget {
                   
                   // Patient Cards
                   _buildPatientCard(
+                    context,
                     name: 'Roberto Cruz',
                     age: 68,
                     condition: 'Diabetes Type 2',
@@ -255,6 +266,7 @@ class CaregiverDashboardScreen extends StatelessWidget {
                   SizedBox(height: 12),
                   
                   _buildPatientCard(
+                    context,
                     name: 'Elena Torres',
                     age: 72,
                     condition: 'Hypertension',
@@ -266,6 +278,7 @@ class CaregiverDashboardScreen extends StatelessWidget {
                   SizedBox(height: 12),
                   
                   _buildPatientCard(
+                    context,
                     name: 'Miguel Santos',
                     age: 65,
                     condition: 'High Cholesterol',
@@ -368,33 +381,7 @@ class CaregiverDashboardScreen extends StatelessWidget {
       ),
       
       // Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: Offset(0, -5),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(Icons.home, 'Home', true),
-                _buildNavItem(Icons.people, 'Patients', false),
-                _buildNavItem(Icons.medication, 'Medications', false),
-                _buildNavItem(Icons.calendar_month, 'Calendar', false),
-                _buildNavItem(Icons.settings, 'Settings', false),
-              ],
-            ),
-          ),
-        ),
-      ),
+      bottomNavigationBar: _buildBottomNav(context, 0),
     );
   }
 
@@ -561,7 +548,8 @@ class CaregiverDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPatientCard({
+  Widget _buildPatientCard(
+    BuildContext context, {
     required String name,
     required int age,
     required String condition,
@@ -569,109 +557,119 @@ class CaregiverDashboardScreen extends StatelessWidget {
     required String lastChecked,
     required Color statusColor,
   }) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PatientsScreen(),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: Offset(0, 4),
             ),
-            child: Icon(
-              Icons.person,
-              size: 32,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.person,
+                size: 32,
+                color: Colors.grey[400],
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '$age years • $condition',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.medication,
+                        size: 14,
+                        color: Colors.grey[500],
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        '$medicationCount medications',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: Colors.grey[500],
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        lastChecked,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
               color: Colors.grey[400],
             ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: statusColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '$age years • $condition',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.medication,
-                      size: 14,
-                      color: Colors.grey[500],
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '$medicationCount medications',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Icon(
-                      Icons.access_time,
-                      size: 14,
-                      color: Colors.grey[500],
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      lastChecked,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Colors.grey[400],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -801,10 +799,62 @@ class CaregiverDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
+  Widget _buildBottomNav(BuildContext context, int currentIndex) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(context, Icons.home, 'Home', currentIndex == 0, 0),
+              _buildNavItem(context, Icons.people, 'Patients', currentIndex == 1, 1),
+              _buildNavItem(context, Icons.medication, 'Medications', currentIndex == 2, 2),
+              _buildNavItem(context, Icons.calendar_month, 'Calendar', currentIndex == 3, 3),
+              _buildNavItem(context, Icons.settings, 'Settings', currentIndex == 4, 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isActive, int index) {
     return Expanded(
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          if (index == 0 && !isActive) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CaregiverDashboardScreen()),
+            );
+          } else if (index == 1 && !isActive) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => PatientsScreen()),
+            );
+          } else if (index == 2 && !isActive) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MedicationScreen()),
+            );
+          } else if (index == 3 && !isActive) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CalendarScreen()),
+            );
+          }
+        },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8),
           child: Column(

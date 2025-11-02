@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'Home.dart';           // Replace with your actual Home file name
-import 'Medication.dart';     // Replace with your Medication file
-import 'Caregiver.dart';      // Replace with your Caregiver file
+import 'Home.dart';
+import 'Medication.dart';
+import 'Caregiver.dart';
+import 'BookAppointment.dart'; // Import the new book appointment page
 
 class AppointmentPage extends StatefulWidget {
   const AppointmentPage({Key? key}) : super(key: key);
@@ -12,124 +13,64 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _notesController = TextEditingController();
-
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
-  String? _selectedDepartment;
-  String? _selectedDoctor;
-  String _appointmentType = 'General Consultation';
-
-  final List<String> _departments = [
-    'Cardiology', 'Dermatology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Psychiatry', 'Radiology',
+  // Sample appointment data
+  final List<Map<String, dynamic>> _appointments = [
+    {
+      'doctor': 'Dr. Sarah Johnson',
+      'department': 'Cardiology',
+      'date': DateTime.now().add(const Duration(days: 2)),
+      'time': '10:30 AM',
+      'type': 'General Consultation',
+      'status': 'Confirmed',
+    },
+    {
+      'doctor': 'Dr. Emily Brown',
+      'department': 'Dermatology',
+      'date': DateTime.now().add(const Duration(days: 5)),
+      'time': '2:00 PM',
+      'type': 'Follow-up',
+      'status': 'Pending',
+    },
+    {
+      'doctor': 'Dr. Lisa Anderson',
+      'department': 'Neurology',
+      'date': DateTime.now().subtract(const Duration(days: 3)),
+      'time': '9:00 AM',
+      'type': 'Routine Checkup',
+      'status': 'Completed',
+    },
   ];
 
-  final Map<String, List<String>> _doctors = {
-    'Cardiology': ['Dr. Sarah Johnson', 'Dr. Michael Chen'],
-    'Dermatology': ['Dr. Emily Brown', 'Dr. James Wilson'],
-    'Neurology': ['Dr. Lisa Anderson', 'Dr. Robert Taylor'],
-    'Orthopedics': ['Dr. David Martinez', 'Dr. Jennifer Lee'],
-    'Pediatrics': ['Dr. Amanda White', 'Dr. Christopher Davis'],
-    'Psychiatry': ['Dr. Michelle Garcia', 'Dr. Daniel Rodriguez'],
-    'Radiology': ['Dr. Karen Thomas', 'Dr. Steven Moore'],
-  };
-
-  final List<String> _appointmentTypes = [
-    'General Consultation', 'Follow-up', 'Urgent Care', 'Routine Checkup', 'Vaccination',
-  ];
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _notesController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 90)),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(
-            primary: Color(0xFFFF6B6B),
-            onPrimary: Colors.white,
-            surface: Colors.white,
-            onSurface: Colors.black,
-          ),
-        ),
-        child: child!,
-      ),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() => _selectedDate = picked);
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Confirmed':
+        return Colors.green;
+      case 'Pending':
+        return Colors.orange;
+      case 'Completed':
+        return Colors.blue;
+      case 'Cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(
-            primary: Color(0xFFFF6B6B),
-            onPrimary: Colors.white,
-            surface: Colors.white,
-            onSurface: Colors.black,
-          ),
-        ),
-        child: child!,
-      ),
-    );
-    if (picked != null && picked != _selectedTime) {
-      setState(() => _selectedTime = picked);
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'Confirmed':
+        return Icons.check_circle;
+      case 'Pending':
+        return Icons.pending;
+      case 'Completed':
+        return Icons.task_alt;
+      case 'Cancelled':
+        return Icons.cancel;
+      default:
+        return Icons.help;
     }
   }
 
-  void _submitAppointment() {
-    if (!_formKey.currentState!.validate()) return;
-    if (_selectedDate == null) return _showSnackBar('Please select a date', Colors.red);
-    if (_selectedTime == null) return _showSnackBar('Please select a time', Colors.red);
-    if (_selectedDepartment == null) return _showSnackBar('Please select a department', Colors.red);
-    if (_selectedDoctor == null) return _showSnackBar('Please select a doctor', Colors.red);
-
-    _showSnackBar('Appointment booked successfully!', Colors.green);
-
-    _formKey.currentState!.reset();
-    setState(() {
-      _nameController.clear();
-      _emailController.clear();
-      _phoneController.clear();
-      _notesController.clear();
-      _selectedDate = null;
-      _selectedTime = null;
-      _selectedDepartment = null;
-      _selectedDoctor = null;
-      _appointmentType = 'General Consultation';
-    });
-  }
-
-  void _showSnackBar(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  // Bottom Navigation Item
   Widget _buildNavItem({
     required IconData icon,
     required String label,
@@ -192,6 +133,290 @@ class _AppointmentPageState extends State<AppointmentPage> {
     );
   }
 
+  Widget _buildAppointmentCard(Map<String, dynamic> appointment) {
+    final isUpcoming = appointment['date'].isAfter(DateTime.now());
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            // Show appointment details dialog
+            _showAppointmentDetails(appointment);
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF6B6B).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.medical_services,
+                        color: Color(0xFFFF6B6B),
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            appointment['doctor'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2C3E50),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            appointment['department'],
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(appointment['status']).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getStatusIcon(appointment['status']),
+                            size: 16,
+                            color: _getStatusColor(appointment['status']),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            appointment['status'],
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: _getStatusColor(appointment['status']),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F7FA),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today, size: 18, color: Color(0xFFFF6B6B)),
+                          const SizedBox(width: 8),
+                          Text(
+                            DateFormat('EEEE, MMM dd, yyyy').format(appointment['date']),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF2C3E50),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.access_time, size: 18, color: Color(0xFFFF6B6B)),
+                          const SizedBox(width: 8),
+                          Text(
+                            appointment['time'],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF2C3E50),
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              appointment['type'],
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (isUpcoming && appointment['status'] == 'Confirmed') ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            // Reschedule logic
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Reschedule feature coming soon')),
+                            );
+                          },
+                          icon: const Icon(Icons.event_repeat, size: 18),
+                          label: const Text('Reschedule'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFFF6B6B),
+                            side: const BorderSide(color: Color(0xFFFF6B6B)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            _showCancelDialog(appointment);
+                          },
+                          icon: const Icon(Icons.cancel_outlined, size: 18),
+                          label: const Text('Cancel'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAppointmentDetails(Map<String, dynamic> appointment) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Appointment Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDetailRow('Doctor', appointment['doctor']),
+            _buildDetailRow('Department', appointment['department']),
+            _buildDetailRow('Date', DateFormat('EEEE, MMM dd, yyyy').format(appointment['date'])),
+            _buildDetailRow('Time', appointment['time']),
+            _buildDetailRow('Type', appointment['type']),
+            _buildDetailRow('Status', appointment['status']),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCancelDialog(Map<String, dynamic> appointment) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Cancel Appointment'),
+        content: const Text('Are you sure you want to cancel this appointment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('No'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                appointment['status'] = 'Cancelled';
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Appointment cancelled'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Yes, Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,7 +442,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 children: [
                   Row(
                     children: [
-                      // BACK ARROW → HOME
                       GestureDetector(
                         onTap: () {
                           Navigator.of(context).pushReplacement(
@@ -234,163 +458,85 @@ class _AppointmentPageState extends State<AppointmentPage> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Text(
-                        'Book Appointment',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      const Expanded(
+                        child: Text(
+                          'My Appointments',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Icon(Icons.calendar_today_rounded, size: 60, color: Colors.white),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Schedule Your Visit',
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.calendar_month, size: 60, color: Colors.white),
+                      const SizedBox(width: 12),
+                      Text(
+                        '${_appointments.length} Appointments',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
-            // FORM CONTENT
+            // APPOINTMENTS LIST
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionTitle('Personal Information'),
-                      const SizedBox(height: 15),
-                      _buildTextField(
-                        controller: _nameController,
-                        label: 'Full Name',
-                        icon: Icons.person_outline,
-                        validator: (value) => value?.isEmpty ?? true ? 'Please enter your name' : null,
-                      ),
-                      const SizedBox(height: 15),
-                      _buildTextField(
-                        controller: _emailController,
-                        label: 'Email Address',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value?.isEmpty ?? true) return 'Please enter your email';
-                          if (!value!.contains('@')) return 'Please enter a valid email';
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      _buildTextField(
-                        controller: _phoneController,
-                        label: 'Phone Number',
-                        icon: Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
-                        validator: (value) => value?.isEmpty ?? true ? 'Please enter your phone number' : null,
-                      ),
-                      const SizedBox(height: 30),
-                      _buildSectionTitle('Appointment Details'),
-                      const SizedBox(height: 15),
-                      _buildDropdown(
-                        label: 'Department',
-                        icon: Icons.local_hospital_outlined,
-                        value: _selectedDepartment,
-                        items: _departments,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedDepartment = value;
-                            _selectedDoctor = null;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      _buildDropdown(
-                        label: 'Doctor',
-                        icon: Icons.medical_services_outlined,
-                        value: _selectedDoctor,
-                        items: _selectedDepartment != null ? _doctors[_selectedDepartment!]! : [],
-                        onChanged: (value) => setState(() => _selectedDoctor = value),
-                        enabled: _selectedDepartment != null,
-                      ),
-                      const SizedBox(height: 15),
-                      _buildDropdown(
-                        label: 'Appointment Type',
-                        icon: Icons.assignment_outlined,
-                        value: _appointmentType,
-                        items: _appointmentTypes,
-                        onChanged: (value) => setState(() => _appointmentType = value!),
-                      ),
-                      const SizedBox(height: 15),
-                      Row(
+              child: _appointments.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: _buildDateTimeCard(
-                              label: 'Date',
-                              value: _selectedDate != null
-                                  ? DateFormat('MMM dd, yyyy').format(_selectedDate!)
-                                  : 'Select Date',
-                              icon: Icons.calendar_today_outlined,
-                              onTap: () => _selectDate(context),
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: _buildDateTimeCard(
-                              label: 'Time',
-                              value: _selectedTime != null ? _selectedTime!.format(context) : 'Select Time',
-                              icon: Icons.access_time_outlined,
-                              onTap: () => _selectTime(context),
-                            ),
+                          Icon(Icons.event_busy, size: 80, color: Colors.grey[400]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No appointments scheduled',
+                            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 30),
-                      _buildSectionTitle('Additional Information'),
-                      const SizedBox(height: 15),
-                      _buildTextField(
-                        controller: _notesController,
-                        label: 'Notes (Optional)',
-                        icon: Icons.note_outlined,
-                        maxLines: 4,
-                        validator: null,
-                      ),
-                      const SizedBox(height: 30),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: _submitAppointment,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF6B6B),
-                            foregroundColor: Colors.white,
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                          ),
-                          child: const Text(
-                            'Book Appointment',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.5),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: _appointments.length,
+                      itemBuilder: (context, index) {
+                        return _buildAppointmentCard(_appointments[index]);
+                      },
+                    ),
             ),
           ],
         ),
+      ),
+
+      // FLOATING ACTION BUTTON - Book New Appointment
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const BookAppointmentPage()),
+          );
+        },
+        backgroundColor: const Color(0xFFFF6B6B),
+        icon: const Icon(Icons.add),
+        label: const Text('Book Appointment'),
       ),
 
       // BOTTOM NAVIGATION BAR
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -5))],
+          boxShadow: [
+            BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -5))
+          ],
         ),
         child: SafeArea(
           child: Padding(
@@ -406,109 +552,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // Reusable Widgets (unchanged from your original)
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF2C3E50)),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
-      ),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon, color: const Color(0xFFFF6B6B)),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        ),
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        validator: validator,
-      ),
-    );
-  }
-
-  Widget _buildDropdown({
-    required String label,
-    required IconData icon,
-    required String? value,
-    required List<String> items,
-    required Function(String?) onChanged,
-    bool enabled = true,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
-      ),
-      child: DropdownButtonFormField<String>(
-        value: value,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon, color: const Color(0xFFFF6B6B)),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        ),
-        items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
-        onChanged: enabled ? onChanged : null,
-        validator: (value) => value == null ? 'Please select $label' : null,
-      ),
-    );
-  }
-
-  Widget _buildDateTimeCard({
-    required String label,
-    required String value,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: const Color(0xFFFF6B6B), size: 20),
-                const SizedBox(width: 8),
-                Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF7F8C8D), fontWeight: FontWeight.w500)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 14, color: Color(0xFF2C3E50), fontWeight: FontWeight.w600)),
-          ],
         ),
       ),
     );
