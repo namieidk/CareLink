@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'docup.dart';               // <-- Doctor Sign-Up screen
 import 'package:carelink/auth_service.dart';
+import 'Dashboard.dart';     
 
 class DocSignInScreen extends StatefulWidget {
   const DocSignInScreen({Key? key}) : super(key: key);
@@ -91,9 +92,9 @@ class _DocSignInScreenState extends State<DocSignInScreen>
       if (result['success']) {
         _showSuccess(result['message'] ?? 'Login successful');
         // TODO: Replace with your actual Doctor home screen
-        // Navigator.of(context).pushReplacement(
-        //   MaterialPageRoute(builder: (_) => const DoctorHomeScreen()),
-        // );
+          Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const DoctorDashboardScreen()),
+         );
       } else {
         _showError(result['error'] ?? 'Login failed');
       }

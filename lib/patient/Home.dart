@@ -1,7 +1,79 @@
 import 'package:flutter/material.dart';
+import 'Medication.dart';
+import 'Caregiver.dart';
+import 'Appointment.dart';
+
+// Optional: Create these screens later if not ready
+// import 'Settings.dart';
 
 class PatientHomePage extends StatelessWidget {
   const PatientHomePage({Key? key}) : super(key: key);
+
+  // Bottom nav item with full navigation
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required BuildContext context,
+    required int index,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          // Prevent unnecessary navigation if already on the same screen
+          if (isActive) return;
+
+          switch (index) {
+            case 0: // Home - do nothing or reload
+              break;
+            case 1: // Medication
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const PatientMedicationScreen()),
+              );
+              break;
+            case 2: // Caregiver
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const PatientCaregiverScreen()),
+              );
+              break;
+            case 3: // Appointment
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const AppointmentPage()),
+              );
+              break;
+            case 4: // Settings (create this screen later)
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const Placeholder()), // Replace with PatientSettingsScreen()
+              );
+              break;
+          }
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+               color: isActive ? const Color(0xFFFF6B6B) : Colors.grey[400],
+                size: 26,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isActive ? const Color(0xFFFF6B6B) : Colors.grey[400],
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +85,7 @@ class PatientHomePage extends StatelessWidget {
             // Custom App Bar
             SliverToBoxAdapter(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -37,12 +109,12 @@ class PatientHomePage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.person_outline,
                               color: Colors.white,
                               size: 28,
@@ -51,25 +123,25 @@ class PatientHomePage extends StatelessWidget {
                           Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.add_circle_outline,
                                   color: Colors.white,
                                   size: 28,
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.notifications_outlined,
                                   color: Colors.white,
                                   size: 28,
@@ -79,7 +151,7 @@ class PatientHomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       // Greeting
                       Text(
                         'Welcome back,',
@@ -89,8 +161,8 @@ class PatientHomePage extends StatelessWidget {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(
+                      const SizedBox(height: 4),
+                      const Text(
                         'Patient',
                         style: TextStyle(
                           color: Colors.white,
@@ -98,10 +170,10 @@ class PatientHomePage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       // Search Bar
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -109,14 +181,14 @@ class PatientHomePage extends StatelessWidget {
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
                               blurRadius: 10,
-                              offset: Offset(0, 4),
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
                         child: Row(
                           children: [
                             Icon(Icons.search, color: Colors.grey[400], size: 24),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: TextField(
                                 decoration: InputDecoration(
@@ -126,7 +198,7 @@ class PatientHomePage extends StatelessWidget {
                                     fontSize: 15,
                                   ),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 16),
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
                                 ),
                               ),
                             ),
@@ -139,7 +211,7 @@ class PatientHomePage extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // Content
             SliverPadding(
               padding: const EdgeInsets.all(20),
@@ -147,8 +219,8 @@ class PatientHomePage extends StatelessWidget {
                 delegate: SliverChildListDelegate([
                   // Reminder Card
                   Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.all(20),
+                    decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -157,10 +229,10 @@ class PatientHomePage extends StatelessWidget {
                           Color(0xFFFFE0E0),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFFFF9B9B).withOpacity(0.2),
+                          color: Color(0xFFFF9B9B),
                           blurRadius: 12,
                           offset: Offset(0, 4),
                         ),
@@ -169,22 +241,22 @@ class PatientHomePage extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.alarm,
                             color: Color(0xFFFF6B6B),
                             size: 28,
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: const [
                               Text(
                                 'Medication Reminder',
                                 style: TextStyle(
@@ -197,14 +269,14 @@ class PatientHomePage extends StatelessWidget {
                               Text(
                                 'Get reminders for your pills',
                                 style: TextStyle(
-                                  color: Color(0xFFD63031).withOpacity(0.8),
+                                  color: Color(0xFFD63031),
                                   fontSize: 14,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        Icon(
+                        const Icon(
                           Icons.arrow_forward_ios,
                           color: Color(0xFFD63031),
                           size: 18,
@@ -212,9 +284,9 @@ class PatientHomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
-                  SizedBox(height: 32),
-                  
+
+                  const SizedBox(height: 32),
+
                   // Section Header
                   Text(
                     'Medication Management',
@@ -224,64 +296,71 @@ class PatientHomePage extends StatelessWidget {
                       color: Colors.grey[800],
                     ),
                   ),
-                  
-                  SizedBox(height: 16),
-                  
+
+                  const SizedBox(height: 16),
+
                   // Grid Cards
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                     childAspectRatio: 0.85,
                     children: [
                       _buildFeatureCard(
+                        context: context,
                         icon: Icons.medication_outlined,
                         title: 'My Current\nMedication List',
-                        color: Color(0xFFFFCFCF),
-                        iconColor: Color(0xFFD63031),
+                        color: const Color(0xFFFFCFCF),
+                        iconColor: const Color(0xFFD63031),
                         iconBg: Colors.white,
+                        destination: const PatientMedicationScreen(),
                       ),
                       _buildFeatureCard(
+                        context: context,
                         icon: Icons.local_hospital_outlined,
                         title: 'My Assigned\nCaregiver Details',
-                        color: Color(0xFFD4C5F9),
-                        iconColor: Color(0xFF6C5CE7),
+                        color: const Color(0xFFD4C5F9),
+                        iconColor: const Color(0xFF6C5CE7),
                         iconBg: Colors.white,
+                        destination: const PatientCaregiverScreen(),
                       ),
                       _buildFeatureCard(
+                        context: context,
                         icon: Icons.favorite_outline,
                         title: 'Daily Health and\nWellness Tips',
-                        color: Color(0xFFE8D4F8),
-                        iconColor: Color(0xFFA29BFE),
+                        color: const Color(0xFFE8D4F8),
+                        iconColor: const Color(0xFFA29BFE),
                         iconBg: Colors.white,
                       ),
                       _buildFeatureCard(
+                        context: context,
                         icon: Icons.calendar_today_outlined,
                         title: 'Plan Your Next\nMedical Visit',
-                        color: Color(0xFFFFE6C7),
-                        iconColor: Color(0xFFE17055),
+                        color: const Color(0xFFFFE6C7),
+                        iconColor: const Color(0xFFE17055),
                         iconBg: Colors.white,
+                        destination: const AppointmentPage(),
                       ),
                     ],
                   ),
-                  
-                  SizedBox(height: 20),
+
+                  const SizedBox(height: 20),
                 ]),
               ),
             ),
           ],
         ),
       ),
-      
-      // Bottom Navigation Bar
+
+      // Bottom Navigation Bar - FULLY FUNCTIONAL
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black12,
               blurRadius: 10,
               offset: Offset(0, -5),
             ),
@@ -293,11 +372,41 @@ class PatientHomePage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home, 'Home', true),
-                _buildNavItem(Icons.medication, 'Medication', false),
-                _buildNavItem(Icons.local_hospital, 'Caregiver', false),
-                _buildNavItem(Icons.calendar_month, 'Appointment', false),
-                _buildNavItem(Icons.settings, 'Settings', false),
+                _buildNavItem(
+                  icon: Icons.home,
+                  label: 'Home',
+                  isActive: true,
+                  context: context,
+                  index: 0,
+                ),
+                _buildNavItem(
+                  icon: Icons.medication,
+                  label: 'Medication',
+                  isActive: false,
+                  context: context,
+                  index: 1,
+                ),
+                _buildNavItem(
+                  icon: Icons.local_hospital,
+                  label: 'Caregiver',
+                  isActive: false,
+                  context: context,
+                  index: 2,
+                ),
+                _buildNavItem(
+                  icon: Icons.calendar_month,
+                  label: 'Appointment',
+                  isActive: false,
+                  context: context,
+                  index: 3,
+                ),
+                _buildNavItem(
+                  icon: Icons.settings,
+                  label: 'Settings',
+                  isActive: false,
+                  context: context,
+                  index: 4,
+                ),
               ],
             ),
           ),
@@ -306,12 +415,15 @@ class PatientHomePage extends StatelessWidget {
     );
   }
 
+  // Updated _buildFeatureCard with navigation
   Widget _buildFeatureCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required Color color,
     required Color iconColor,
     required Color iconBg,
+    Widget? destination,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -321,7 +433,7 @@ class PatientHomePage extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -329,14 +441,20 @@ class PatientHomePage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () {},
+          onTap: destination != null
+              ? () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => destination),
+                  );
+                }
+              : null,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: iconBg,
                     borderRadius: BorderRadius.circular(12),
@@ -347,7 +465,7 @@ class PatientHomePage extends StatelessWidget {
                     size: 28,
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Text(
                   title,
                   style: TextStyle(
@@ -357,7 +475,7 @@ class PatientHomePage extends StatelessWidget {
                     height: 1.3,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Text(
@@ -368,7 +486,7 @@ class PatientHomePage extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward,
                       size: 14,
@@ -378,36 +496,6 @@ class PatientHomePage extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Expanded(
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color: isActive ? Color(0xFFFF6B6B) : Colors.grey[400],
-                size: 26,
-              ),
-              SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isActive ? Color(0xFFFF6B6B) : Colors.grey[400],
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                ),
-              ),
-            ],
           ),
         ),
       ),

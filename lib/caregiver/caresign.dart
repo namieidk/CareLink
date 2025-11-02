@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'dart:math' as math;
 import 'careup.dart';
-import 'package:carelink/auth_service.dart'; // Import AuthService
+import 'package:carelink/auth_service.dart'; 
+import 'CareHome.dart';
 
 class CareSignInScreen extends StatefulWidget {
   const CareSignInScreen({Key? key}) : super(key: key);
@@ -95,7 +96,7 @@ class _CareSignInScreenState extends State<CareSignInScreen>
       // Navigate to home or dashboard
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const Placeholder()), // Replace with your home
+          MaterialPageRoute(builder: (_) => const CaregiverDashboardScreen()), 
         );
       }
     } else {
